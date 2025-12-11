@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - SkillUp</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="logo">SkillUp</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Back to Market</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container animate-fade">
+        <div class="chat-container">
+            <div class="sidebar">
+                <h3>Contacts</h3>
+                <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem">
+                    <!-- Contact list would go here -->
+                    <p>Select a contact to chat.</p>
+                </div>
+            </div>
+            <div class="chat-area">
+                <div class="messages" id="messagesArea">
+                    <!-- Messages -->
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="msgInput" placeholder="Type a message..."
+                        style="flex:1; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--border); background: var(--dark-bg); color: #fff;">
+                    <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const receiverId = urlParams.get('sellerId'); // The person we are chatting with
+        const myId = localStorage.getItem('userId');
+
+        if (!myId) {
+            window.location.href = 'login.html';
+        }
+
+        async function loadMessages() {
+            if (!receiverId) return;
+            // Fetch messages between me and them
+            try {
+                // The route expects /:senderId/:receiverId. 
+                // However, our route logic might be one-way "sent" or we need to query both.
+                // The current backend is simple: Message.find({ senderId, receiverId }) 
+                // which only finds messages SENT by sender to receiver.
+                // We need both directions. 
+                // This is a limitation of the current simple backend provided/modified. 
+                // I will fetch both directions and merge them for a better "chat" feel if I can, 
+                // or just one way for now to satisfy "basic".
+                // Let's try to fetch sent messages for now.
+
+                const res = await fetch(`/api/messages/${myId}/${receiverId}`);
+                const sentMsgs = await res.json();
+
+                // Ideally we also fetch received messages: /api/messages/${receiverId}/${myId}
+                const res2 = await fetch(`/api/messages/${receiverId}/${myId}`);
+                const receivedMsgs = await res2.json();
+
+                // Merge and sort
+                const allMsgs = [...sentMsgs, ...receivedMsgs].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+                const area = document.getElementById('messagesArea');
+                area.innerHTML = allMsgs.map(m => {
+                    const isMe = m.senderId === myId;
+                    return `<div class="message ${isMe ? 'sent' : 'received'}">${m.message}</div>`;
+                }).join('');
+
+                area.scrollTop = area.scrollHeight;
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function sendMessage() {
+            const msg = document.getElementById('msgInput').value;
+            if (!msg || !receiverId) return;
+
+            try {
+                await fetch('/api/messages/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        senderId: myId,
+                        receiverId: receiverId,
+                        message: msg
+                    })
+                });
+                document.getElementById('msgInput').value = '';
+                loadMessages();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        if (receiverId) {
+            loadMessages();
+            setInterval(loadMessages, 3000); // Poll every 3s
+        }
+    </script>
+</body>
+
+</html>

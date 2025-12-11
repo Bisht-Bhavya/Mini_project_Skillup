@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillUp - Showcase</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="logo">SkillUp</div>
+        <nav>
+            <ul id="navParams">
+                <!-- Dynamically populated -->
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html" class="btn btn-primary">Join</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container animate-fade">
+        <h1 style="margin-bottom: 2rem">Skill Showcase Feed</h1>
+        <div class="gig-grid" id="postContainer">
+            <p>Loading posts...</p>
+        </div>
+    </div>
+
+    <script>
+        const userId = localStorage.getItem('userId');
+        const nav = document.getElementById('navParams');
+
+        if (userId) {
+            nav.innerHTML = `
+                <li><a href="create-post.html" class="btn btn-outline" style="border: 1px solid var(--primary); color: var(--primary)">+ Create Post</a></li>
+                <li><a href="profile.html?userId=${userId}">My Profile</a></li>
+                <li><a href="chat.html">Messages</a></li>
+                <li><button onclick="logout()" class="btn btn-outline">Logout</button></li>
+            `;
+        } else {
+            nav.innerHTML = `
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html" class="btn btn-primary">Join</a></li>
+            `;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.reload();
+        }
+
+        async function fetchPosts() {
+            try {
+                const res = await fetch('/api/posts/all');
+                const posts = await res.json();
+                const container = document.getElementById('postContainer');
+
+                if (posts.length === 0) {
+                    container.innerHTML = '<p>No posts yet. Be the first!</p>';
+                    return;
+                }
+
+                container.innerHTML = posts.map(post => `
+                    <div class="gig-card" style="display:flex; flex-direction:column;">
+                        <div class="gig-content">
+                            <div class="gig-title">${post.title}</div>
+                            <small style="color:var(--primary); font-weight:bold">${post.tags.join(', ')}</small>
+                            <p style="font-size: 0.9rem; margin-top: 1rem; color: #ccc">${post.description}</p>
+                            
+                            <hr style="border-color: var(--border); margin: 1rem 0;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center">
+                                <span style="font-size: 0.85rem; color: var(--text-muted)">By ${post.authorName || 'Unknown'}</span>
+                                <a href="profile.html?userId=${post.authorId}" class="btn btn-outline" style="font-size: 0.8rem;">View Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        fetchPosts();
+    </script>
+</body>
+
+</html>

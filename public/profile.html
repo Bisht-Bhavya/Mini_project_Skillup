@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - SkillUp</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="logo">SkillUp</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container animate-fade">
+        <div class="auth-box" style="margin: 2rem auto; width: 100%; max-width: 800px">
+            <h2 id="userName" style="text-align: left">Loading...</h2>
+            <p id="userEmail" style="color: var(--text-muted)">...</p>
+            <br>
+            <div id="actionArea"></div>
+        </div>
+
+        <h3>User's Posts</h3>
+        <div class="gig-grid" id="userPosts">
+            <p>Loading posts...</p>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const profileId = urlParams.get('userId');
+        const myId = localStorage.getItem('userId');
+
+        async function loadProfile() {
+            if (!profileId) return;
+
+            // Fetch User Details
+            try {
+                const res = await fetch(`/api/users/${profileId}`);
+                const user = await res.json();
+
+                document.getElementById('userName').innerText = user.name;
+                document.getElementById('userEmail').innerText = user.email;
+
+                const actionArea = document.getElementById('actionArea');
+                if (myId && myId !== profileId) {
+                    actionArea.innerHTML = `<a href="chat.html?sellerId=${profileId}" class="btn btn-primary">Message ${user.name}</a>`;
+                } else if (myId === profileId) {
+                    actionArea.innerHTML = `<span style="color: var(--primary)">This is your profile</span>`;
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+
+            // Fetch User's Posts
+            try {
+                const res = await fetch(`/api/posts/user/${profileId}`);
+                const posts = await res.json();
+                const container = document.getElementById('userPosts');
+
+                if (posts.length === 0) {
+                    container.innerHTML = '<p>No posts yet.</p>';
+                } else {
+                    container.innerHTML = posts.map(post => `
+                        <div class="gig-card" style="display:flex; flex-direction:column;">
+                            <div class="gig-content">
+                                <div class="gig-title">${post.title}</div>
+                                <small style="color:var(--primary)">${post.tags.join(', ')}</small>
+                                <p style="font-size: 0.9rem; margin-top: 1rem; color: #ccc">${post.description}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+
+</html>

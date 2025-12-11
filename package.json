@@ -1,0 +1,26 @@
+{
+  "name": "mini_project_skillup",
+  "version": "1.0.0",
+  "description": "A mini project",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bisht-Bhavya/Mini_project_Skillup.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Bisht-Bhavya/Mini_project_Skillup/issues"
+  },
+  "homepage": "https://github.com/Bisht-Bhavya/Mini_project_Skillup#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^8.0.0"
+  }
+}
