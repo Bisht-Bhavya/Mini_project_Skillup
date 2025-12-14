@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,10 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <header>
-        <div class="logo">SkillUp</div>
+        <div class="logo"><a href="index.html">SkillUp</a></div>
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -37,25 +39,40 @@
         </div>
     </div>
 
+    <script src="toast.js"></script>
     <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            // detailed auth is not fully implemented in backend yet (just register), 
-            // so we will simulate login by finding the user if possible or just storing a session.
-            // For now, we'll just check if the user exists via a simple fetch or bypass.
-            // Since there is no login route in userRoutes.js provided initially, we will assume "Register" is the primary way
-            // or we can add a login route. 
-            // Let's just mock it to redirect to index for this "basic" version or try to register if not found.
-            // Actually, I'll alert the user.
-            
-            // Wait, looking at userRoutes.js, there is NO login route. 
-            // I'll just redirect to the dashboard storing the name/email in localStorage for now 
-            // to fulfill "basic" requirement without rewriting the whole auth system unless requested.
-            
+
             const email = document.getElementById('email').value;
-            localStorage.setItem('userEmail', email);
-            window.location.href = 'index.html';
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch('/api/users/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('userId', data.user._id);
+                    localStorage.setItem('userEmail', data.user.email);
+                    localStorage.setItem('userName', data.user.name);
+                    showToast('Login successful', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000); // Slight delay to show toast
+                } else {
+                    showToast(data.error || 'Login failed', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('An error occurred', 'error');
+            }
         });
     </script>
 </body>
+
 </html>

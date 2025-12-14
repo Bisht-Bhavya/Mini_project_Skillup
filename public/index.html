@@ -11,7 +11,7 @@
 
 <body>
     <header>
-        <div class="logo">SkillUp</div>
+        <div class="logo"> <a href="index.html">SkillUp</a></div>
         <nav>
             <ul id="navParams">
                 <!-- Dynamically populated -->
@@ -28,6 +28,23 @@
         </div>
     </div>
 
+    <!-- Post Modal -->
+    <div id="postModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <div class="menu-container">
+                <button class="menu-btn" onclick="toggleMenu()">&#x22EE;</button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            <div id="modalBody">
+                <!-- Content goes here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="toast.js"></script>
     <script>
         const userId = localStorage.getItem('userId');
         const nav = document.getElementById('navParams');
@@ -51,35 +68,142 @@
             window.location.reload();
         }
 
+        let postsData = [];
+        let currentPostId = null;
+
         async function fetchPosts() {
             try {
                 const res = await fetch('/api/posts/all');
-                const posts = await res.json();
+                postsData = await res.json();
                 const container = document.getElementById('postContainer');
 
-                if (posts.length === 0) {
+                if (postsData.length === 0) {
                     container.innerHTML = '<p>No posts yet. Be the first!</p>';
                     return;
                 }
 
-                container.innerHTML = posts.map(post => `
-                    <div class="gig-card" style="display:flex; flex-direction:column;">
+                container.innerHTML = postsData.map(post => `
+                    <div class="gig-card" style="display:flex; flex-direction:column; cursor:pointer;" onclick="openPostModal('${post._id}')">
                         <div class="gig-content">
                             <div class="gig-title">${post.title}</div>
                             <small style="color:var(--primary); font-weight:bold">${post.tags.join(', ')}</small>
                             <p style="font-size: 0.9rem; margin-top: 1rem; color: #ccc">${post.description}</p>
                             
+                            ${post.mediaUrl ? (
+                        post.mediaType === 'video'
+                            ? `<video controls src="${post.mediaUrl}" style="width:100%; margin-top:1rem; border-radius:8px; max-height:400px;"></video>`
+                            : `<img src="${post.mediaUrl}" style="width:100%; margin-top:1rem; border-radius:8px; object-fit:cover; max-height:400px;">`
+                    ) : ''}
+                            
                             <hr style="border-color: var(--border); margin: 1rem 0;">
                             
                             <div style="display: flex; justify-content: space-between; align-items: center">
                                 <span style="font-size: 0.85rem; color: var(--text-muted)">By ${post.authorName || 'Unknown'}</span>
-                                <a href="profile.html?userId=${post.authorId}" class="btn btn-outline" style="font-size: 0.8rem;">View Profile</a>
+                                <div style="display:flex; gap:10px;">
+                                    <a href="profile.html?userId=${post.authorId}" class="btn btn-outline" style="font-size: 0.8rem;" onclick="event.stopPropagation()">View Profile</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 `).join('');
             } catch (err) {
                 console.error(err);
+            }
+        }
+
+        // Modal Logic
+        function openPostModal(id) {
+            const post = postsData.find(p => p._id === id);
+            if (!post) return;
+            currentPostId = id;
+
+            const modalBody = document.getElementById('modalBody');
+            const deleteOption = document.getElementById('deleteOption'); // Container for dynamic delete btn
+
+            // Populate Content
+            modalBody.innerHTML = `
+                <h2>${post.title}</h2>
+                <div style="margin: 0.5rem 0; color: var(--primary); font-weight: bold;">${post.tags.join(', ')}</div>
+                <div style="margin-bottom: 1.5rem; color: var(--text-muted);">By ${post.authorName} | ${new Date(post.createdAt).toLocaleDateString()}</div>
+                
+                ${post.mediaUrl ? (
+                    post.mediaType === 'video'
+                        ? `<video controls src="${post.mediaUrl}" style="width:100%; border-radius:8px; max-height:500px; margin-bottom:1.5rem;"></video>`
+                        : `<img src="${post.mediaUrl}" style="width:100%; border-radius:8px; object-fit:contain; max-height:500px; margin-bottom:1.5rem;">`
+                ) : ''}
+
+                <p style="font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap;">${post.description}</p>
+            `;
+
+            // Setup Menu
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.innerHTML = `<button class="dropdown-item" onclick="sharePost()">Share Link</button>`;
+
+            if (userId === post.authorId) {
+                dropdown.innerHTML += `<button class="dropdown-item text-danger" onclick="confirmDelete()">Delete Post</button>`;
+            }
+
+            document.getElementById('postModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('postModal').classList.remove('active');
+            document.getElementById('dropdownMenu').classList.remove('show');
+        }
+
+        function toggleMenu() {
+            document.getElementById('dropdownMenu').classList.toggle('show');
+        }
+
+        // Close menu when clicking outside
+        window.onclick = function (event) {
+            if (!event.target.matches('.menu-btn')) {
+                const dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    let openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+            if (event.target.classList.contains('modal-overlay')) {
+                closeModal();
+            }
+        }
+
+        function sharePost() {
+            const link = window.location.origin + '/#post-' + currentPostId;
+            // In a real app we'd have a route /post/:id, but for now just copy this text
+            navigator.clipboard.writeText(`Check out this post on SkillUp: ${link}`).then(() => {
+                showToast('Link copied to clipboard!', 'success');
+            });
+            toggleMenu();
+        }
+
+        async function confirmDelete() {
+            if (!confirm('Are you sure you want to delete this post?')) return;
+
+            try {
+                const res = await fetch(`/api/posts/${currentPostId}`, { method: 'DELETE' });
+
+                if (res.status === 401) {
+                    showToast('Session expired. Please login again.', 'error');
+                    localStorage.clear();
+                    setTimeout(() => window.location.href = 'login.html', 1500);
+                    return;
+                }
+
+                if (res.ok) {
+                    showToast('Post deleted successfully', 'success');
+                    closeModal();
+                    fetchPosts(); // Reload feed
+                } else {
+                    const data = await res.json();
+                    showToast(data.error || 'Failed to delete', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Error deleting post', 'error');
             }
         }
 

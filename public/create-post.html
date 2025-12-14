@@ -11,7 +11,7 @@
 
 <body>
     <header>
-        <div class="logo">SkillUp</div>
+        <div class="logo"><a href="index.html">SkillUp</a></div>
         <nav>
             <ul>
                 <li><a href="index.html">Back to Feed</a></li>
@@ -37,40 +37,85 @@
                     <textarea id="description" rows="5" placeholder="Tell us about what you achieved..."
                         required></textarea>
                 </div>
+                <div class="form-group">
+                    <label>Upload Image or Video (Optional)</label>
+                    <input type="file" id="media" accept="image/*,video/*">
+                </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%">Post to Feed</button>
             </form>
         </div>
     </div>
 
+    <script src="toast.js"></script>
     <script>
+        const userId = localStorage.getItem('userId');
+        const userEmail = localStorage.getItem('userEmail');
+        const userName = localStorage.getItem('userName');
+
+        // Protect route
+        if (!userId) {
+            showToast('You must be logged in!', 'error');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+        }
+
         document.getElementById('postForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const title = document.getElementById('title').value;
-            const tags = document.getElementById('tags').value.split(',').map(t => t.trim());
-            const description = document.getElementById('description').value;
-            const authorId = localStorage.getItem('userId');
-            const authorName = localStorage.getItem('userName') || 'Anonymous';
 
-            if (!authorId) {
-                alert('You must be logged in!');
-                window.location.href = 'login.html';
+            if (!userId) {
+                showToast('You must be logged in!', 'error');
                 return;
             }
+
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            // Send tags as comma-separated string for Multer backend to split
+            const tags = document.getElementById('tags').value;
+            // The 'price' field is not present in the HTML, but included in the provided edit.
+            // For now, it will be undefined or an empty string if not added to the form.
+            const price = document.getElementById('price') ? document.getElementById('price').value : '';
+
+            const mediaInput = document.getElementById('media');
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('tags', tags);
+            formData.append('authorId', userId);
+            formData.append('authorName', userName);
+            formData.append('authorEmail', userEmail);
+            if (price) formData.append('price', price);
+
+            if (mediaInput.files.length > 0) {
+                formData.append('media', mediaInput.files[0]);
+            }
+
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Posting...';
 
             try {
                 const res = await fetch('/api/posts/create', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, tags, description, authorId, authorName })
+                    body: formData
                 });
-                const data = await res.json();
-                if (data.post) {
-                    alert('Posted successfully!');
-                    window.location.href = 'index.html';
+
+                if (res.ok) {
+                    showToast('Posted successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showToast('Error posting', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Post to Feed';
                 }
             } catch (err) {
                 console.error(err);
-                alert('Error posting');
+                showToast('Error posting', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Post to Feed';
             }
         });
     </script>

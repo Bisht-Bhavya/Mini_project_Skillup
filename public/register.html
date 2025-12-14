@@ -11,7 +11,7 @@
 
 <body>
     <header>
-        <div class="logo">SkillUp</div>
+        <div class="logo"><a href="index.html">SkillUp</a></div>
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -43,6 +43,7 @@
         </div>
     </div>
 
+    <script src="toast.js"></script>
     <script>
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -61,12 +62,16 @@
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userId', data.user._id); // Assuming backend sends _id
                     localStorage.setItem('userName', name);
-                    alert('Registration Success!');
-                    window.location.href = 'index.html';
+                    showToast('Registration Success!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showToast(data.error || 'Registration failed', 'error');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Error registering');
+                showToast('Error registering', 'error');
             }
         });
     </script>
