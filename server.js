@@ -31,9 +31,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Connect MongoDB
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/skillfinder';
 mongoose
-    .connect('mongodb://localhost:27017/skillfinder', { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB Connected'))
+    .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB Connected to ' + (process.env.MONGO_URI ? 'Atlas' : 'Localhost')))
     .catch(err => console.log(err));
 
 // Routes
@@ -43,4 +44,5 @@ app.use('/api/posts', require('./routes/postRoutes'));
 
 
 // Start Server
-app.listen(4000, () => console.log('Server running on port 4000'));
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));

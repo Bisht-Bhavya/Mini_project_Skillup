@@ -1,91 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messages - SkillUp Pro</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
-    
-    <style>
-        /* --- THEME VARIABLES (SkillUp Dark Theme) --- */
-        :root {
-            --bg-body: #111111;
-            --bg-sidebar: #1e1e1e;
-            --bg-card: #1e1e1e;
-            --bg-header: #1e1e1e;
-            --bg-input: #2d2d2d;
-            
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --border: #333333;
-            
-            /* The SkillUp Green */
-            --primary-color: #1dbf73; 
-            
-            /* Message Bubbles */
-            --msg-sent: #1dbf73;
-            --msg-received: #2d2d2d;
-            
-            --danger-red: #ff5555;
-            --quote-bg: rgba(0,0,0,0.2);
-        }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    <style>
+        /* --- THEME VARIABLES (Using Global) --- */
+        /* Most variables are now inherited from style.css */
 
         body {
-            background-color: var(--bg-body);
+            background-color: var(--dark-bg);
             color: var(--text-main);
             height: 100vh;
             display: flex;
             flex-direction: column;
-        }
-
-        /* --- HEADER --- */
-        header {
-            padding: 0 30px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--bg-header);
-            height: 70px;
-        }
-        .logo a { font-weight: 800; font-size: 22px; color: var(--text-main); text-decoration: none; }
-        .nav-link { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.2s; }
-        .nav-link:hover { color: var(--primary-color); }
-
-        /* --- LAYOUT --- */
-        .container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
             overflow: hidden;
+            /* Prevent body scroll, container handles it */
         }
+
+        /* --- HEADER & NAVIGATION --- */
+        /* We rely on global header styles now, but might need some specific overrides if strictly necessary. 
+           For now, we let style.css handle header. */
+
+        /* --- LAYOUT OVERRIDES --- */
+        /* style.css defines .chat-container as grid, but our html structure might need slight tweaks or we accept the grid.
+           Let's ensure the container uses the global container class correctly. */
 
         .chat-container {
-            width: 100%;
-            max-width: 1200px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px; /* Rounded corners for modern look */
             display: flex;
+            /* Override style.css grid */
+            width: 99%;
+            max-width: none;
+            /* Fill the screen as requested */
+            gap: 0;
+            /* Override style.css gap */
+            height: 85vh;
+            /* Restore original feel, or fill available space */
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         /* --- SIDEBAR --- */
-        .sidebar {
-            width: 320px;
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-sidebar);
+        /* style.css has .sidebar styles (bg, border). We add specific contact list styles here. */
+        .sidebar h3 {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
         }
-        .sidebar h3 { padding: 20px; font-size: 18px; font-weight: 700; color: var(--text-main); border-bottom: 1px solid var(--border); }
-        .contact-list { flex: 1; overflow-y: auto; }
-        
+
+        .contact-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
         .contact-item {
             display: flex;
             align-items: center;
@@ -95,20 +72,46 @@
             transition: 0.2s;
             border-left: 4px solid transparent;
         }
-        .contact-item:hover { background-color: #2a2a2a; }
-        .contact-item.active { background-color: #2a2a2a; border-left-color: var(--primary-color); }
 
-        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #444; margin-right: 15px; object-fit: cover;}
-        .contact-info h4 { font-size: 15px; margin-bottom: 4px; color: var(--text-main); font-weight: 600;}
-        .contact-info p { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;}
+        .contact-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .contact-item.active {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--primary);
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #444;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .contact-info h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .contact-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
 
         /* --- CHAT AREA --- */
         .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-body); /* Plain dark background */
-            background-image: radial-gradient(#222 1px, transparent 1px); /* Subtle dot pattern */
+            /* style.css handles flex dir */
+            background-color: var(--dark-bg);
+            background-image: radial-gradient(#222 1px, transparent 1px);
             background-size: 20px 20px;
             position: relative;
         }
@@ -119,19 +122,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--bg-header);
+            background: rgba(26, 28, 35, 0.8);
+            /* Match global header roughly */
             height: 70px;
         }
-        
+
         /* Messages Scroll Area */
-        .messages {
-            flex: 1;
-            padding: 20px 30px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        /* .messages is in style.css */
 
         /* --- MESSAGE BUBBLES --- */
         .message-row {
@@ -140,10 +137,17 @@
             margin-bottom: 5px;
             position: relative;
         }
-        .message-row.sent { justify-content: flex-end; }
-        .message-row.received { justify-content: flex-start; }
+
+        .message-row.sent {
+            justify-content: flex-end;
+        }
+
+        .message-row.received {
+            justify-content: flex-start;
+        }
 
         .message {
+            /* style.css has some message styles, we override/extend them */
             max-width: 60%;
             padding: 10px 14px;
             border-radius: 12px;
@@ -151,16 +155,38 @@
             line-height: 1.5;
             position: relative;
             word-wrap: break-word;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
         }
-        
-        .received .message { background-color: var(--msg-received); border-bottom-left-radius: 2px; }
-        .sent .message { background-color: var(--msg-sent); color: #fff; border-bottom-right-radius: 2px; }
 
-        .message img { max-width: 100%; border-radius: 6px; margin-top: 5px; display: block; }
-        .msg-time { font-size: 10px; opacity: 0.7; align-self: flex-end; margin-top: 5px; margin-left: 10px;}
+        .received .message {
+            background-color: var(--card-bg);
+            border-bottom-left-radius: 2px;
+            border: 1px solid var(--border);
+        }
+
+        .sent .message {
+            background-color: var(--primary);
+            color: #fff;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message img {
+            max-width: 100%;
+            border-radius: 6px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .msg-time {
+            font-size: 10px;
+            opacity: 0.7;
+            align-self: flex-end;
+            margin-top: 5px;
+            margin-left: 10px;
+        }
+
 
         /* --- DROPDOWN ARROW (The Feature You Wanted) --- */
         .msg-dropdown-trigger {
@@ -169,34 +195,41 @@
             right: 0;
             width: 25px;
             height: 25px;
-            color: rgba(255,255,255,0.8);
-            display: none; /* Hidden until hover */
+            color: rgba(255, 255, 255, 0.8);
+            display: none;
+            /* Hidden until hover */
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border-top-right-radius: 12px; /* Match bubble corner */
-            background: linear-gradient(to left, rgba(0,0,0,0.3), transparent);
+            border-top-right-radius: 12px;
+            /* Match bubble corner */
+            background: linear-gradient(to left, rgba(0, 0, 0, 0.3), transparent);
         }
-        
+
         /* Show arrow on hover */
-        .message:hover .msg-dropdown-trigger { display: flex; }
+        .message:hover .msg-dropdown-trigger {
+            display: flex;
+        }
 
         .msg-context-menu {
             display: none;
             position: absolute;
             top: 25px;
             right: 10px;
-            background: #2a2a2a;
-            border: 1px solid #444;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 6px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
             z-index: 100;
             width: 140px;
             overflow: hidden;
             padding: 5px 0;
         }
-        .msg-context-menu.show { display: block; }
-        
+
+        .msg-context-menu.show {
+            display: block;
+        }
+
         .msg-menu-item {
             padding: 10px 15px;
             font-size: 13px;
@@ -206,12 +239,18 @@
             align-items: center;
             gap: 10px;
         }
-        .msg-menu-item:hover { background-color: #333; }
-        .msg-menu-item.delete { color: var(--danger-red); }
+
+        .msg-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .msg-menu-item.delete {
+            color: #ff5555;
+        }
 
         /* --- QUOTE / REPLY STYLES --- */
         .quoted-msg-container {
-            background-color: rgba(0,0,0,0.2);
+            background-color: rgba(0, 0, 0, 0.2);
             border-left: 4px solid #fff;
             border-radius: 4px;
             padding: 6px 10px;
@@ -221,15 +260,32 @@
             display: flex;
             flex-direction: column;
         }
-        .sent .quoted-msg-container { border-left-color: rgba(255,255,255,0.5); background-color: rgba(0,0,0,0.1); }
-        .received .quoted-msg-container { border-left-color: var(--primary-color); }
-        
-        .quoted-author { font-weight: 700; margin-bottom: 2px; opacity: 0.9; }
-        .quoted-text { opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .sent .quoted-msg-container {
+            border-left-color: rgba(255, 255, 255, 0.5);
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .received .quoted-msg-container {
+            border-left-color: var(--primary);
+        }
+
+        .quoted-author {
+            font-weight: 700;
+            margin-bottom: 2px;
+            opacity: 0.9;
+        }
+
+        .quoted-text {
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         /* --- INPUT AREA & REPLY PREVIEW --- */
         .input-wrapper {
-            background: var(--bg-header);
+            background: var(--card-bg);
             display: flex;
             flex-direction: column;
             width: 100%;
@@ -239,26 +295,53 @@
 
         /* Reply Preview Bar */
         .reply-preview-bar {
-            display: none; /* Hidden by default */
-            background: #252525;
+            display: none;
+            /* Hidden by default */
+            background: var(--card-bg);
             padding: 12px 20px;
-            border-left: 5px solid var(--primary-color);
+            border-left: 5px solid var(--primary);
             border-bottom: 1px solid var(--border);
             align-items: center;
             justify-content: space-between;
             animation: slideUp 0.2s ease;
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .preview-content { display: flex; flex-direction: column; width: 90%; }
-        .preview-title { color: var(--primary-color); font-weight: 700; font-size: 13px; margin-bottom: 4px; }
-        .preview-text { color: var(--text-muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .preview-content {
+            display: flex;
+            flex-direction: column;
+            width: 90%;
+        }
+
+        .preview-title {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .preview-text {
+            color: var(--text-muted);
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         .chat-input-area {
             padding: 15px;
             display: flex;
             align-items: center;
-            background: var(--bg-header);
+            background: var(--card-bg);
         }
 
         #msgInput {
@@ -266,87 +349,154 @@
             padding: 12px 15px;
             border-radius: 8px;
             border: 1px solid var(--border);
-            background: var(--bg-input);
+            background: var(--dark-bg);
             color: #fff;
             margin: 0 15px;
             outline: none;
             font-size: 15px;
             transition: 0.2s;
         }
-        #msgInput:focus { border-color: var(--primary-color); }
 
-        .btn-icon { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 8px; transition: 0.2s; }
-        .btn-icon:hover { color: var(--primary-color); }
-        
-        .btn-send { 
-            background-color: var(--primary-color); 
-            color: #fff; 
-            border: none; 
-            width: 40px; height: 40px; 
-            border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; 
+        #msgInput:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
             transition: 0.2s;
         }
-        .btn-send:hover { opacity: 0.9; }
+
+        .btn-icon:hover {
+            color: var(--primary);
+        }
+
+        .btn-send {
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-send:hover {
+            opacity: 0.9;
+        }
 
         /* --- ATTACHMENT MENU --- */
-        .attachment-container { position: relative; }
+        .attachment-container {
+            position: relative;
+        }
+
         .attachment-menu {
             display: none;
             position: absolute;
             bottom: 60px;
             left: 0;
-            background-color: #2a2a2a;
-            border: 1px solid #444;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 12px;
             width: 180px;
             padding: 8px 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
             z-index: 100;
         }
-        .attachment-menu.show { display: block; animation: popIn 0.1s ease; }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .attachment-option { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; color: var(--text-main); font-size: 14.5px; gap: 12px;}
-        .attachment-option:hover { background-color: #333; }
-        
+        .attachment-menu.show {
+            display: block;
+            animation: popIn 0.1s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .attachment-option {
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: var(--text-main);
+            font-size: 14.5px;
+            gap: 12px;
+        }
+
+        .attachment-option:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
         /* --- CHAT HEADER MENU --- */
-        .header-menu-container { position: relative; }
+        .header-menu-container {
+            position: relative;
+        }
+
         .header-menu {
             display: none;
             position: absolute;
             top: 40px;
             right: 0;
-            background-color: #2a2a2a;
-            border: 1px solid #444;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 6px;
             width: 160px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
             z-index: 101;
             overflow: hidden;
             padding: 5px 0;
         }
-        .header-menu.show { display: block; }
-        .header-menu .msg-menu-item:hover { background-color: #333; }
+
+        .header-menu.show {
+            display: block;
+        }
+
+        .header-menu .msg-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
 
         /* Empty State */
-        .no-chat-selected { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); }
+        .no-chat-selected {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 
 <body>
 
     <header>
-        <div class="logo"><a href="#">SkillUp</a></div>
+        <div class="logo"> <a href="index.html">SkillUp</a></div>
         <nav>
-            <a href="#" class="nav-link">Back to Market</a>
+            <ul style="list-style: none; display: flex; gap: 1.5rem;">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+            </ul>
         </nav>
     </header>
 
-    <div class="container">
+    <div class="chat-wrapper" style="width: 100%; display: flex; justify-content: center; padding-top: 20px;">
         <div class="chat-container">
-            
+
             <div class="sidebar">
                 <h3>Messages</h3>
                 <div class="contact-list" id="contactList"></div>
@@ -355,13 +505,14 @@
             <div class="chat-area">
                 <div class="chat-header" id="chatHeader">
                     <div id="headerInfo" style="display: flex; align-items: center;">
-                        <img id="headerAvatar" src="" style="width: 40px; height: 40px; border-radius: 50%; display: none; margin-right: 15px;">
+                        <img id="headerAvatar" src=""
+                            style="width: 40px; height: 40px; border-radius: 50%; display: none; margin-right: 15px;">
                         <div>
                             <span style="font-weight: 600; display: block;" id="chatName">Select a contact</span>
                             <span style="font-size: 12px; color: var(--text-muted);" id="chatStatus"></span>
                         </div>
                     </div>
-                    
+
                     <div class="header-menu-container">
                         <button class="btn-icon" onclick="toggleHeaderMenu()"><i class="fas fa-ellipsis-v"></i></button>
                         <div class="header-menu" id="headerMenu">
@@ -375,12 +526,13 @@
                 <div class="messages" id="messagesArea">
                     <div class="no-chat-selected">
                         <i class="far fa-comments" style="font-size: 60px; margin-bottom: 20px; opacity: 0.3;"></i>
-                        <p style="font-size: 18px; color: var(--text-muted);">Select a conversation to start messaging</p>
+                        <p style="font-size: 18px; color: var(--text-muted);">Select a conversation to start messaging
+                        </p>
                     </div>
                 </div>
 
                 <div class="input-wrapper">
-                    
+
                     <div class="reply-preview-bar" id="replyPreview">
                         <div class="preview-content">
                             <span class="preview-title" id="replyTargetName">Replied User</span>
@@ -391,23 +543,28 @@
 
                     <div class="chat-input-area">
                         <div class="attachment-container">
-                            <button class="btn-icon" onclick="toggleAttachmentMenu()"><i class="fas fa-paperclip"></i></button>
+                            <button class="btn-icon" onclick="toggleAttachmentMenu()"><i
+                                    class="fas fa-paperclip"></i></button>
                             <div class="attachment-menu" id="attachmentMenu">
                                 <div class="attachment-option" onclick="triggerFile('image')">
                                     <i class="fas fa-image" style="color: #d63384;"></i> Photos
-                                </div> 
+                                </div>
                                 <div class="attachment-option" onclick="triggerFile('document')">
                                     <i class="fas fa-file-alt" style="color: #4facfe;"></i> Document
                                 </div>
                             </div>
                         </div>
-                        
-                        <input type="file" id="fileInputImage" accept="image/*" style="display: none;" onchange="handleFileUpload(this, 'image')">
-                        <input type="file" id="fileInputDoc" accept=".pdf,.doc,.docx,.txt" style="display: none;" onchange="handleFileUpload(this, 'document')">
-                        
-                        <input type="text" id="msgInput" placeholder="Type a message..." onkeypress="handleEnter(event)">
-                        
-                        <button class="btn-send" onclick="sendTextMessage()"><i class="fas fa-paper-plane" style="font-size: 16px;"></i></button>
+
+                        <input type="file" id="fileInputImage" accept="image/*" style="display: none;"
+                            onchange="handleFileUpload(this, 'image')">
+                        <input type="file" id="fileInputDoc" accept=".pdf,.doc,.docx,.txt" style="display: none;"
+                            onchange="handleFileUpload(this, 'document')">
+
+                        <input type="text" id="msgInput" placeholder="Type a message..."
+                            onkeypress="handleEnter(event)">
+
+                        <button class="btn-send" onclick="sendTextMessage()"><i class="fas fa-paper-plane"
+                                style="font-size: 16px;"></i></button>
                     </div>
                 </div>
             </div>
@@ -417,26 +574,85 @@
 
     <script>
         // --- DATA & STATE ---
-        const myId = "user_me";
+        const myId = localStorage.getItem('userId');
+        const myName = localStorage.getItem('userName') || 'You';
+        if (!myId) window.location.href = 'login.html';
+
         let activeReceiverId = null;
-        let replyingToMsg = null; 
+        let activeReceiverName = null; // Store for sending
+        let replyingToMsg = null;
 
         // Initial Data
-        const contacts = [
-            { id: "c1", name: "Ayush Sinha", avatar: "https://ui-avatars.com/api/?name=Ayush+S&background=random&color=fff", status: "Online" },
-            { id: "c2", name: "Dhairya P.", avatar: "https://ui-avatars.com/api/?name=Dhairya&background=random", status: "Last seen: 2h ago" },
-        ];
+        let contacts = [];
 
-        const messageStore = {
-            "c1": [
-                { id: 101, senderId: "c1", name: "Ayush Sinha", type: "text", content: "Hey! Did you check the new update?", timestamp: "10:30 AM" },
-                { id: 102, senderId: "user_me", name: "You", type: "text", content: "Yes, looks amazing!", timestamp: "10:32 AM" }
-            ],
-            "c2": []
-        };
+
 
         // --- RENDER ---
-        document.addEventListener('DOMContentLoaded', renderContacts);
+        document.addEventListener('DOMContentLoaded', initChat);
+
+        async function initChat() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sellerId = urlParams.get('sellerId');
+
+            try {
+                // 1. Fetch Conversations
+                const res = await fetch(`/api/messages/conversations/${myId}`);
+                if (res.ok) {
+                    const recentChats = await res.json();
+
+                    // Enrich with details (names might be missing if we were the sender)
+                    for (const chat of recentChats) {
+                        try {
+                            const userRes = await fetch(`/api/users/${chat.id}`);
+                            const user = await userRes.json();
+                            contacts.push({
+                                id: user._id,
+                                name: user.name,
+                                avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`,
+                                status: "Synced",
+                                lastMsg: chat.lastMessage
+                            });
+                        } catch (e) {
+                            console.error("Skipping invalid user", chat.id);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load conversations", err);
+            }
+
+            // 2. Handle URL Parameter (New Contact)
+            if (sellerId) {
+                const existing = contacts.find(c => c.id === sellerId);
+                if (!existing) {
+                    try {
+                        const res = await fetch(`/api/users/${sellerId}`);
+                        if (res.ok) {
+                            const user = await res.json();
+                            contacts.unshift({
+                                id: user._id,
+                                name: user.name,
+                                avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`,
+                                status: "New",
+                                lastMsg: ""
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Failed to load contact params", err);
+                    }
+                } else {
+                    // Move to top
+                    contacts = contacts.filter(c => c.id !== sellerId);
+                    contacts.unshift(existing);
+                }
+                renderContacts();
+                switchChat(sellerId);
+            } else {
+                renderContacts();
+                // Select first if available
+                if (contacts.length > 0) switchChat(contacts[0].id);
+            }
+        }
 
         function renderContacts() {
             const list = document.getElementById('contactList');
@@ -445,7 +661,7 @@
                     <img src="${c.avatar}" class="avatar">
                     <div class="contact-info">
                         <h4>${c.name}</h4>
-                        <p>${c.status}</p>
+                        <p>${c.lastMsg || 'Click to chat'}</p>
                     </div>
                 </div>
             `).join('');
@@ -453,72 +669,87 @@
 
         function switchChat(id) {
             activeReceiverId = id;
+            const contact = contacts.find(c => c.id === id);
+            activeReceiverName = contact ? contact.name : 'Unknown'; /* Store for sent msgs */
+
             cancelReply();
             renderContacts();
-            
-            const contact = contacts.find(c => c.id === id);
-            document.getElementById('chatName').innerText = contact.name;
-            document.getElementById('chatStatus').innerText = contact.status;
-            document.getElementById('headerAvatar').src = contact.avatar;
-            document.getElementById('headerAvatar').style.display = 'block';
-            
+
+            if (contact) {
+                document.getElementById('chatName').innerText = contact.name;
+                document.getElementById('chatStatus').innerText = contact.status;
+                document.getElementById('headerAvatar').src = contact.avatar;
+                document.getElementById('headerAvatar').style.display = 'block';
+            }
+
             renderMessages();
         }
 
-        function renderMessages() {
+        async function renderMessages() {
             const area = document.getElementById('messagesArea');
-            const msgs = messageStore[activeReceiverId] || [];
+            area.innerHTML = '<p class="no-chat-selected">Loading...</p>';
 
-            if (!activeReceiverId) return;
-
-            if (msgs.length === 0) {
-                area.innerHTML = `<div class="no-chat-selected"><p style="font-size:14px; background:rgba(255,255,255,0.05); padding:8px 15px; border-radius:15px;">No messages yet</p></div>`;
+            if (!activeReceiverId) {
+                area.innerHTML = `<div class="no-chat-selected"><i class="far fa-comments" style="font-size: 60px; margin-bottom: 20px; opacity: 0.3;"></i><p>Select a conversation</p></div>`;
                 return;
             }
 
-            area.innerHTML = msgs.map(m => {
-                const isMe = m.senderId === myId;
-                let contentHtml = '';
-                
-                // 1. Quoted Message Block (if exists)
-                if (m.replyTo) {
-                    contentHtml += `
-                        <div class="quoted-msg-container">
-                            <span class="quoted-author">${m.replyTo.name}</span>
-                            <span class="quoted-text">${m.replyTo.content}</span>
-                        </div>
-                    `;
+            try {
+                const res = await fetch(`/api/messages/${myId}/${activeReceiverId}`);
+
+                // Check if response is actually JSON
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") === -1) {
+                    // It's likely HTML (login page redirect), session expired
+                    throw new Error("Session expired. Please Login again.");
                 }
 
-                // 2. Main Content
-                if (m.type === 'image') contentHtml += `<img src="${m.content}">`;
-                else if (m.type === 'document') contentHtml += m.content; // Doc HTML is pre-built
-                else contentHtml += `<span>${m.content}</span>`;
+                if (!res.ok) throw new Error(`Server Error: ${res.status}`);
 
-                return `
-                    <div class="message-row ${isMe ? 'sent' : 'received'}">
-                        <div class="message">
-                            ${contentHtml}
-                            <span class="msg-time">${m.timestamp}</span>
-                            
-                            <div class="msg-dropdown-trigger" onclick="toggleMessageMenu(event, ${m.id})">
-                                <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                const msgs = await res.json();
+
+                if (msgs.length === 0) {
+                    area.innerHTML = `<div class="no-chat-selected"><p style="font-size:14px; background:rgba(255,255,255,0.05); padding:8px 15px; border-radius:15px;">No messages yet</p></div>`;
+                    return;
+                }
+
+                area.innerHTML = msgs.map(m => {
+                    const isMe = m.senderId === myId;
+                    let contentHtml = '';
+
+                    // 1. Quoted Message Block
+                    if (m.replyTo) {
+                        contentHtml += `
+                            <div class="quoted-msg-container">
+                                <span class="quoted-author">${m.replyTo.name}</span>
+                                <span class="quoted-text">${m.replyTo.content}</span>
                             </div>
+                        `;
+                    }
 
-                            <div class="msg-context-menu" id="menu-${m.id}">
-                                <div class="msg-menu-item" onclick="startReply(${m.id})">
-                                    <i class="fas fa-reply"></i> Reply
-                                </div>
-                                <div class="msg-menu-item delete" onclick="deleteMessage(${m.id})">
-                                    <i class="fas fa-trash-alt"></i> Delete
-                                </div>
+                    // 2. Main Content
+                    if (m.type === 'image') contentHtml += `<img src="${m.content}">`;
+                    else if (m.type === 'document') contentHtml += m.content;
+                    else contentHtml += `<span>${m.content}</span>`;
+
+                    // Time formatting
+                    const time = new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    return `
+                        <div class="message-row ${isMe ? 'sent' : 'received'}">
+                            <div class="message">
+                                ${contentHtml}
+                                <span class="msg-time">${time}</span>
                             </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
-            
-            area.scrollTop = area.scrollHeight;
+                    `;
+                }).join('');
+
+                area.scrollTop = area.scrollHeight;
+            } catch (err) {
+                console.error(err);
+                area.innerHTML = `<p class="error" style="text-align:center; padding:20px; color:#ff5555;">Failed to load messages: ${err.message}.<br>Try restarting the server.</p>`;
+            }
         }
 
         // --- REPLY LOGIC ---
@@ -526,30 +757,30 @@
             e.stopPropagation(); // Prevent closing immediately
             // Close all other menus first
             document.querySelectorAll('.msg-context-menu').forEach(el => el.classList.remove('show'));
-            
+
             // Show this one
             const menu = document.getElementById(`menu-${msgId}`);
-            if(menu) menu.classList.toggle('show');
+            if (menu) menu.classList.toggle('show');
         }
 
         function startReply(msgId) {
             const msgs = messageStore[activeReceiverId];
             const msg = msgs.find(m => m.id === msgId);
-            if(!msg) return;
+            if (!msg) return;
 
             replyingToMsg = msg;
-            
+
             // Show Preview
             document.getElementById('replyPreview').style.display = 'flex';
             document.getElementById('replyTargetName').innerText = msg.name;
-            
+
             let previewText = msg.content;
-            if(msg.type === 'image') previewText = "📷 Photo";
-            else if(msg.type === 'document') previewText = "📄 Document";
-            
+            if (msg.type === 'image') previewText = "📷 Photo";
+            else if (msg.type === 'document') previewText = "📄 Document";
+
             document.getElementById('replyTargetText').innerText = previewText;
             document.getElementById('msgInput').focus();
-            
+
             // Close menu
             document.querySelectorAll('.msg-context-menu').forEach(el => el.classList.remove('show'));
         }
@@ -570,49 +801,52 @@
             input.value = '';
         }
 
-        function addMessageToStore(content, type) {
+        async function addMessageToStore(content, type) {
             let replyData = null;
-            
-            // Create Simplified Reply Object
+
             if (replyingToMsg) {
-                let cleanContent = replyingToMsg.content;
-                if(replyingToMsg.type === 'image') cleanContent = "📷 Photo";
-                if(replyingToMsg.type === 'document') cleanContent = "📄 Document";
-                
-                replyData = {
-                    name: replyingToMsg.name,
-                    content: cleanContent
-                };
+                // ... (existing reply logic optional for now, simplified)
+                replyData = { name: replyingToMsg.senderName || 'User', content: replyingToMsg.content };
             }
 
-            const newMsg = {
-                id: Date.now(),
+            const payload = {
                 senderId: myId,
-                name: "You",
-                type: type,
+                senderName: myName,
+                receiverId: activeReceiverId,
                 content: content,
-                replyTo: replyData, // Store reply info here
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                type: type,
+                replyTo: replyData
             };
 
-            if (!messageStore[activeReceiverId]) messageStore[activeReceiverId] = [];
-            messageStore[activeReceiverId].push(newMsg);
-            
-            cancelReply();
-            renderMessages();
+            try {
+                const res = await fetch('/api/messages/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    cancelReply();
+                    renderMessages(); // Reload to show new message
+                } else {
+                    alert('Failed to send');
+                }
+            } catch (err) {
+                console.error(err);
+            }
         }
 
         function handleEnter(e) { if (e.key === 'Enter') sendTextMessage(); }
 
         // --- DELETING MESSAGES ---
         function deleteMessage(msgId) {
-            if(!confirm("Delete this message?")) return;
+            if (!confirm("Delete this message?")) return;
             messageStore[activeReceiverId] = messageStore[activeReceiverId].filter(m => m.id !== msgId);
             renderMessages();
         }
-        
+
         function deleteChat() {
-            if(confirm("Clear this chat?")) {
+            if (confirm("Clear this chat?")) {
                 messageStore[activeReceiverId] = [];
                 renderMessages();
                 document.getElementById('headerMenu').classList.remove('show');
@@ -622,15 +856,15 @@
         // --- MENU TOGGLES & OUTSIDE CLICKS ---
         function toggleHeaderMenu() { document.getElementById('headerMenu').classList.toggle('show'); }
         function toggleAttachmentMenu() { document.getElementById('attachmentMenu').classList.toggle('show'); }
-        
+
         function triggerFile(type) {
             document.getElementById('attachmentMenu').classList.remove('show');
-            if(type === 'image') document.getElementById('fileInputImage').click();
+            if (type === 'image') document.getElementById('fileInputImage').click();
             else document.getElementById('fileInputDoc').click();
         }
 
         // Close all menus when clicking anywhere else
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             // Helper to close if click is outside target
             const closeIfOutside = (menuId, triggerClass) => {
                 const menu = document.getElementById(menuId);
@@ -641,7 +875,7 @@
 
             closeIfOutside('headerMenu', 'btn-icon');
             closeIfOutside('attachmentMenu', 'btn-icon');
-            
+
             // Special handling for message context menus (class based)
             if (!e.target.closest('.msg-context-menu') && !e.target.closest('.msg-dropdown-trigger')) {
                 document.querySelectorAll('.msg-context-menu').forEach(el => el.classList.remove('show'));
@@ -650,11 +884,11 @@
 
         // --- FILE HANDLING ---
         function handleFileUpload(input, type) {
-            if(!activeReceiverId) return;
+            if (!activeReceiverId) return;
             const file = input.files[0];
-            if(!file) return;
+            if (!file) return;
 
-            if(type === 'image') {
+            if (type === 'image') {
                 const reader = new FileReader();
                 reader.onload = (e) => addMessageToStore(e.target.result, 'image');
                 reader.readAsDataURL(file);
@@ -665,7 +899,7 @@
                         <i class="fas fa-file-alt" style="font-size:24px; color:#4facfe; margin-right:10px;"></i>
                         <div>
                             <div style="color:var(--text-main); font-weight:500; font-size:13px;">${file.name}</div>
-                            <div style="color:var(--text-muted); font-size:11px;">${(file.size/1024).toFixed(0)} KB • Click to download</div>
+                            <div style="color:var(--text-muted); font-size:11px;">${(file.size / 1024).toFixed(0)} KB • Click to download</div>
                         </div>
                     </a>`;
                 addMessageToStore(html, 'document');
@@ -675,4 +909,5 @@
     </script>
 
 </body>
+
 </html>
