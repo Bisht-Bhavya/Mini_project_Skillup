@@ -31,11 +31,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Connect MongoDB
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/skillfinder';
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+    console.error('MONGO_URI environment variable is not set. Set MONGO_URI to your MongoDB connection string.');
+    process.exit(1);
+}
 mongoose
     .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB Connected to ' + (process.env.MONGO_URI ? 'Atlas' : 'Localhost')))
-    .catch(err => console.log(err));
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => {
+        console.error('Failed to connect to MongoDB:', err);
+        process.exit(1);
+    });
 
 // Routes
 app.use('/api/users', userRoutes);
@@ -44,5 +51,8 @@ app.use('/api/posts', require('./routes/postRoutes'));
 
 
 // Start Server
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 0;
+const server = app.listen(PORT, () => {
+    const actualPort = server.address && server.address().port ? server.address().port : PORT;
+    console.log(`Server running on port ${actualPort}`);
+});

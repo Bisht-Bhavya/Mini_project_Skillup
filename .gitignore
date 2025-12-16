@@ -1,0 +1,14 @@
+# Node modules
+node_modules/
+
+# Environment files
+.env
+.env.local
+
+# Uploads and generated files
+uploads/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
